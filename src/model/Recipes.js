@@ -17,7 +17,7 @@ const DataSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    Image: {
+    image: {
         type: String,
         required: false,
     }
