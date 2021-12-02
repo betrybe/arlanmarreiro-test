@@ -37,7 +37,7 @@ module.exports = {
             if (user) {
                 const id = mongoose.mongo.ObjectId(user.id).toString();
                 const { role } = user;
-                const token = jwt.sign({ id, email, role }, 'eb8ea89321237f7b4520', {
+                const token = jwt.sign({ id, email, role }, 'e10adc3949ba59abbe56e057f20f883e', {
                     expiresIn: '1d',
                 });
                 return response.status(200).json({ token });
