@@ -66,8 +66,45 @@ module.exports = {
         }
     },
 
-    async deleteReceitas(req, res) {
+    async deletar(req, res) {
+        const token = req.headers.authorization;
+        let dados = '';
+        let receita = '';
+        if (!token) { return res.status(401).json({ message: 'missing auth token' }); }
+        try {
+            dados = await promisify(jwt.verify)(token, 'e10adc3949ba59abbe56e057f20f883e');
+        } catch (err) {
+            return res.status(401).json({ message: 'jwt malformed' });
+        }
+        receita = await recipes.findById(req.params.id);
+        if (dados.id === receita.userId || dados.role === 'admin') {
+            await recipes.findOneAndDelete(req.params.id)
+                .then(() => res.status(204).json())
+                .catch(() => res.status(204).json());
+        }
+    },
 
-    }
+    async imageRecipes(req, res) {
+        const token = req.headers.authorization;
+        let dados = '';
+        let receita = '';
+        if (!token) { return res.status(401).json({ message: 'missing auth token' }); }
+        try {
+            dados = await promisify(jwt.verify)(token, 'e10adc3949ba59abbe56e057f20f883e');
+        } catch (err) {
+            return res.status(401).json({ message: 'jwt malformed' });
+        }
+        receita = await recipes.findById(req.params.id);
+        if (dados.id === receita.userId || dados.role === 'admin') {
+            const { userId } = receita;
+            const update = {
+                userId,
+                image: `localhost:3000/src/uploads/${req.params.id}.jpeg`,
+            };
+            await recipes.findOneAndUpdate(req.params.id, update, { new: true })
+                .then((receitaUpdate) => res.status(200).json(receitaUpdate))
+                .catch((err) => res.status(400).json({ err }));
+        }
+    },
 
 }
